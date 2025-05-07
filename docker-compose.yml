@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  scraper:
+    build: .
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=linkedin_jobs
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres_password
+    volumes:
+      - .:/app
+    ports:
+      - "9222:9222"  # For Chrome debugging if needed
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - scraper-network
+    restart: unless-stopped
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=linkedin_jobs
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - scraper-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
+networks:
+  scraper-network:
+    driver: bridge
