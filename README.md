@@ -1,28 +1,18 @@
-# LinkedIn Laravel Job Scraper
+# LinkedIn Laravel Job Scraper with Visa Sponsorship Filter
 
-A dockerized Python application that scrapes LinkedIn for Laravel developer job postings with remote work options.
+A Flask application that scrapes LinkedIn for Laravel developer job postings, with specific focus on remote positions and visa sponsorship opportunities.
 
 ## Features
 
-- Searches for Laravel developer positions on LinkedIn
+- Scrapes LinkedIn for Laravel developer jobs
 - Filters for remote work opportunities
+- Identifies job posts with visa sponsorship mentions
 - Stores results in PostgreSQL database
-- Extracts key information including:
-  - Job title
-  - Company name
-  - Location
-  - Job description
-  - Remote work status
-  - Salary range (when available)
-  - Experience requirements
-  - Posted date
-
-## Prerequisites
-
-- Docker
-- Docker Compose
+- Clean web interface to view and filter jobs
 
 ## Setup
+
+### Option 1: Using Docker (Recommended)
 
 1. Clone the repository:
 ```bash
@@ -30,63 +20,113 @@ git clone <repository-url>
 cd <repository-directory>
 ```
 
-2. Configure environment variables:
-   - Copy `.env.example` to `.env`
-   - Update the LinkedIn credentials and database configuration if needed:
+2. Copy the example environment file and edit with your LinkedIn credentials:
 ```bash
 cp .env.example .env
+# Edit .env with your credentials
 ```
 
-3. Build and start the containers:
+3. Build and start the Docker containers:
 ```bash
-docker-compose up --build
+docker-compose up -d
 ```
+
+4. Access the application at http://localhost:5000
+
+### Option 2: Local Setup
+
+#### Prerequisites
+
+- Python 3.8 or higher
+- PostgreSQL
+- Virtual Environment (recommended)
+
+#### Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd <repository-directory>
+```
+
+2. Create and activate a virtual environment:
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# macOS/Linux
+python -m venv venv
+source venv/bin/activate
+```
+
+3. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4. Create a `.env` file with the following content:
+```
+LINKEDIN_EMAIL=your_linkedin_email
+LINKEDIN_PASSWORD=your_linkedin_password
+DB_NAME=linkedin_jobs
+DB_USER=postgres
+DB_PASSWORD=your_postgres_password
+DB_HOST=localhost
+DB_PORT=5432
+SECRET_KEY=your_secret_key
+```
+
+5. Create the PostgreSQL database:
+```bash
+createdb linkedin_jobs
+```
+
+6. Run the application:
+```bash
+python app.py
+```
+
+7. Access the application at http://localhost:5000
+
+## Docker Commands
+
+- Start the application: `docker-compose up -d`
+- Stop the application: `docker-compose down`
+- View logs: `docker-compose logs -f`
+- Rebuild the application: `docker-compose up -d --build`
+- Access PostgreSQL CLI: `docker exec -it linkedin-db psql -U postgres -d linkedin_jobs`
 
 ## Usage
 
-The scraper will automatically:
-1. Connect to LinkedIn
-2. Search for Laravel developer positions
-3. Filter for remote opportunities
-4. Save results to the PostgreSQL database
+1. Navigate to "Scrape Jobs" in the navigation menu
+2. Enter your search criteria (keywords and location)
+3. Check the "Search for jobs with visa sponsorship" option if needed
+4. Click "Start Scraping"
+5. Once the scraping is complete, browse the jobs on the home page
+6. Use the filters to find remote jobs with visa sponsorship
 
-To view the scraped data, you can connect to the PostgreSQL database using the following credentials:
-- Host: localhost
-- Port: 5432
-- Database: linkedin_jobs
-- Username: postgres
-- Password: postgres_password
+## Finding Jobs with Visa Sponsorship
 
-## Database Schema
+The application specifically looks for phrases related to visa sponsorship in job descriptions:
 
-The jobs table contains the following columns:
-- id (SERIAL PRIMARY KEY)
-- job_title (VARCHAR)
-- company_name (VARCHAR)
-- location (VARCHAR)
-- job_link (TEXT UNIQUE)
-- is_remote (BOOLEAN)
-- description (TEXT)
-- posted_date (TIMESTAMP)
-- salary_range (VARCHAR)
-- experience_level (VARCHAR)
-- created_at (TIMESTAMP)
+- "Visa sponsorship available"
+- "Will sponsor visa"
+- "Work permit"
+- "Relocation assistance"
+- "International candidates welcome"
 
-## Troubleshooting
+And many more. It also checks for negative phrases like "no visa sponsorship" to avoid false positives.
 
-1. If the scraper fails to login:
-   - Ensure your LinkedIn credentials are correct in the .env file
-   - LinkedIn might require additional verification
-   - Try running without headless mode for debugging
+## For Developers from Iran
 
-2. If the database connection fails:
-   - Ensure the PostgreSQL container is running
-   - Check the database credentials in the .env file
-   - Wait a few seconds for the database to initialize
+If you're looking to relocate from Iran, consider:
 
-## Security Notes
+1. **Digital Nomad Visas**: Countries like Estonia, Portugal, and Croatia offer special visas for remote workers
+2. **Talent Visas**: Germany, Netherlands, and Canada have special immigration pathways for tech professionals
+3. **Company Relocation**: Look for companies that specifically mention relocation assistance
 
-- Never commit your .env file with real credentials
-- Use strong passwords for the database
-- Consider implementing rate limiting to avoid LinkedIn restrictions
+## License
+
+MIT License
 

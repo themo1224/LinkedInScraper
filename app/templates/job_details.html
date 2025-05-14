@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ job.job_title }} at {{ job.company_name }} - LinkedIn Job Scraper{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Jobs</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ job.job_title }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ job.job_link }}" target="_blank" class="btn btn-primary">Apply on LinkedIn</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4 {% if job.has_visa_sponsorship %}border-success{% endif %}">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">{{ job.job_title }}</h2>
+                <div>
+                    {% if job.is_remote %}
+                        <span class="badge bg-primary me-1">Remote</span>
+                    {% endif %}
+                    {% if job.has_visa_sponsorship %}
+                        <span class="badge bg-success">Visa Sponsorship</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <h4 class="card-subtitle mb-3">{{ job.company_name }}</h4>
+                <p class="card-text"><strong>Location:</strong> {{ job.location }}</p>
+                
+                <hr>
+                
+                <h5>Job Description</h5>
+                <div class="job-description">
+                    {{ job.description|safe }}
+                </div>
+            </div>
+            <div class="card-footer text-muted">
+                Posted: {{ job.posted_date.strftime('%Y-%m-%d') }}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Job Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6>Work Type</h6>
+                    <p>{% if job.is_remote %}<span class="text-primary">Remote</span>{% else %}On-site{% endif %}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6>Visa Sponsorship</h6>
+                    <p>{% if job.has_visa_sponsorship %}<span class="text-success">Available</span>{% else %}Not mentioned{% endif %}</p>
+                </div>
+                
+                {% if job.salary_range %}
+                    <div class="mb-3">
+                        <h6>Salary Range</h6>
+                        <p>{{ job.salary_range }}</p>
+                    </div>
+                {% endif %}
+                
+                {% if job.experience_level %}
+                    <div class="mb-3">
+                        <h6>Experience Required</h6>
+                        <p>{{ job.experience_level }}</p>
+                    </div>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <h6>Posted Date</h6>
+                    <p>{{ job.posted_date.strftime('%Y-%m-%d') }}</p>
+                </div>
+                
+                <a href="{{ job.job_link }}" target="_blank" class="btn btn-primary w-100">Apply on LinkedIn</a>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Similar Jobs</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for similar_job in similar_jobs %}
+                        <a href="{{ url_for('job_details', job_id=similar_job.id) }}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ similar_job.job_title }}</h6>
+                                <div>
+                                    {% if similar_job.is_remote %}
+                                        <small class="text-primary me-1">Remote</small>
+                                    {% endif %}
+                                    {% if similar_job.has_visa_sponsorship %}
+                                        <small class="text-success">Visa</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <p class="mb-1">{{ similar_job.company_name }}</p>
+                            <small>{{ similar_job.location }}</small>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

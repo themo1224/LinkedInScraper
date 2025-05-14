@@ -1,0 +1,74 @@
+/* Custom CSS for LinkedIn Laravel Job Scraper */
+
+/* Card styling */
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card.border-success {
+    border-width: 2px;
+}
+
+/* Badge styling */
+.badge {
+    font-weight: 500;
+    padding: 6px 10px;
+}
+
+/* Job description styling */
+.job-description {
+    line-height: 1.6;
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.job-description::-webkit-scrollbar {
+    width: 8px;
+}
+
+.job-description::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.job-description::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+/* Filter box styling */
+#searchInput {
+    border-radius: 20px;
+    padding-left: 15px;
+}
+
+.form-check-input:checked {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+/* Navbar styling */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Footer styling */
+footer {
+    margin-top: 100px;
+}
+
+/* Media queries for mobile responsiveness */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 20px;
+    }
+    
+    .job-description {
+        max-height: 300px;
+    }
+} 

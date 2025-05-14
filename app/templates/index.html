@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Laravel Remote Jobs - LinkedIn Job Scraper{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>Laravel Developer Jobs with Visa Sponsorship</h1>
+        <p class="lead">Find remote Laravel developer positions with visa sponsorship opportunities.</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{{ url_for('scrape') }}" class="btn btn-primary">Start New Scrape</a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h5 class="mb-0">Filter Jobs</h5>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="remoteOnly" checked>
+                            <label class="form-check-label" for="remoteOnly">Remote Only</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="visaSponsorshipOnly">
+                            <label class="form-check-label" for="visaSponsorshipOnly">Visa Sponsorship Only</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" id="jobsContainer">
+    {% if jobs %}
+        {% for job in jobs %}
+            <div class="col-md-6 mb-4 job-card" 
+                 data-remote="{{ 'true' if job.is_remote else 'false' }}"
+                 data-visa="{{ 'true' if job.has_visa_sponsorship else 'false' }}"
+                 data-title="{{ job.job_title|lower }}"
+                 data-company="{{ job.company_name|lower }}">
+                <div class="card h-100 {% if job.has_visa_sponsorship %}border-success{% endif %}">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">{{ job.job_title }}</h5>
+                        <div>
+                            {% if job.is_remote %}
+                                <span class="badge bg-primary me-1">Remote</span>
+                            {% endif %}
+                            {% if job.has_visa_sponsorship %}
+                                <span class="badge bg-success">Visa Sponsorship</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">{{ job.company_name }}</h6>
+                        <p class="card-text"><strong>Location:</strong> {{ job.location }}</p>
+                        {% if job.salary_range %}
+                            <p class="card-text"><strong>Salary:</strong> {{ job.salary_range }}</p>
+                        {% endif %}
+                        {% if job.experience_level %}
+                            <p class="card-text"><strong>Experience:</strong> {{ job.experience_level }}</p>
+                        {% endif %}
+                        <p class="card-text">
+                            <small class="text-muted">Posted: {{ job.posted_date.strftime('%Y-%m-%d') }}</small>
+                        </p>
+                    </div>
+                    <div class="card-footer text-end">
+                        <a href="{{ url_for('job_details', job_id=job.id) }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                        <a href="{{ job.job_link }}" target="_blank" class="btn btn-sm btn-primary">Apply on LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No jobs found. <a href="{{ url_for('scrape') }}">Start a new scrape</a> to find Laravel developer positions.
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const remoteOnly = document.getElementById('remoteOnly');
+        const visaSponsorshipOnly = document.getElementById('visaSponsorshipOnly');
+        const jobCards = document.querySelectorAll('.job-card');
+        
+        function filterJobs() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const showRemoteOnly = remoteOnly.checked;
+            const showVisaSponsorshipOnly = visaSponsorshipOnly.checked;
+            
+            jobCards.forEach(card => {
+                const isRemote = card.dataset.remote === 'true';
+                const hasVisa = card.dataset.visa === 'true';
+                const title = card.dataset.title;
+                const company = card.dataset.company;
+                
+                const matchesSearch = !searchTerm || 
+                                     title.includes(searchTerm) || 
+                                     company.includes(searchTerm);
+                const matchesRemote = !showRemoteOnly || isRemote;
+                const matchesVisa = !showVisaSponsorshipOnly || hasVisa;
+                
+                if (matchesSearch && matchesRemote && matchesVisa) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        searchInput.addEventListener('input', filterJobs);
+        remoteOnly.addEventListener('change', filterJobs);
+        visaSponsorshipOnly.addEventListener('change', filterJobs);
+        
+        // Initial filter
+        filterJobs();
+    });
+</script>
+{% endblock %} 

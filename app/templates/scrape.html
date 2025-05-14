@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Scrape Laravel Jobs - LinkedIn Job Scraper{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>Scrape Laravel Developer Jobs</h1>
+        <p class="lead">Configure your job search criteria to find Laravel developer positions with remote and visa sponsorship options.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Search Parameters</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('scrape') }}">
+                    <div class="mb-3">
+                        <label for="keywords" class="form-label">Keywords</label>
+                        <input type="text" class="form-control" id="keywords" name="keywords" value="Laravel developer" required>
+                        <div class="form-text">Add keywords relevant to your job search (e.g., Laravel, PHP, Backend)</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" name="location" value="Remote" required>
+                        <div class="form-text">Specify location or "Remote" for remote jobs</div>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="visa_sponsorship" name="visa_sponsorship">
+                        <label class="form-check-label" for="visa_sponsorship">Search for jobs with visa sponsorship</label>
+                        <div class="form-text">Filter for job postings that mention visa sponsorship opportunities</div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6>Note:</h6>
+                        <p class="mb-0">The scraper will run in the background. Feel free to navigate away from this page. Results will be available on the home page when scraping is complete.</p>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Start Scraping</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">For Relocating from Iran</h5>
+            </div>
+            <div class="card-body">
+                <p>When looking for jobs that can sponsor your relocation from Iran, consider:</p>
+                <ul>
+                    <li><strong>Digital Nomad Visas</strong> - Countries like Estonia, Portugal, and Croatia offer special visas for remote workers</li>
+                    <li><strong>Talent Visas</strong> - Countries like Germany, Netherlands, and Canada have special immigration pathways for tech professionals</li>
+                    <li><strong>Company Relocation</strong> - Some companies specifically mention relocation assistance or visa sponsorship</li>
+                </ul>
+                <p>The scraper will look for terms related to visa sponsorship, but it's always good to research the specific immigration policies of the countries you're interested in.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
