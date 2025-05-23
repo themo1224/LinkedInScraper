@@ -10,6 +10,11 @@ services:
       POSTGRES_DB: linkedin_jobs
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - scraper-network
 
@@ -22,9 +27,27 @@ services:
     ports:
       - "5050:80"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - scraper-network
+
+  scraper:
+    build: .
+    container_name: linkedin-scraper
+    environment:
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=linkedin_jobs
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - scraper-network
+    command: python init_db.py
 
 networks:
   scraper-network:
