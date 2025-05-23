@@ -2,13 +2,11 @@ import os
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from datetime import datetime
-import undetected_chromedriver as uc
 from app import db
 from app.models import Job
 
@@ -32,21 +30,18 @@ class LinkedInScraper:
             chrome_options.add_argument('--disable-infobars')
             
             # For debugging
-            print("Starting ChromeDriver...")
+            print("Starting Chrome WebDriver...")
             
-            # Use ChromeDriver from the path specified in environment variable
-            chrome_driver_path = os.environ.get('CHROME_DRIVER', '/usr/local/bin/chromedriver')
-            service = Service(executable_path=chrome_driver_path)
-            
-            self.driver = webdriver.Chrome(service=service, options=chrome_options)
+            # Initialize Chrome WebDriver
+            self.driver = webdriver.Chrome(options=chrome_options)
             
             # Set up wait
             self.wait = WebDriverWait(self.driver, 15)  # Increase wait time for Docker
             
-            print("ChromeDriver setup successful")
+            print("Chrome WebDriver setup successful")
             
         except Exception as e:
-            print(f"Error setting up ChromeDriver: {str(e)}")
+            print(f"Error setting up Chrome WebDriver: {str(e)}")
             raise
 
     def login(self):

@@ -1,74 +1,31 @@
 version: '3.8'
 
 services:
-  flask-app:
-    build: .
-    container_name: linkedin-scraper
-    ports:
-      - "5000:5000"
-      - "9222:9222"  # For Chrome debugging
-    environment:
-      - LINKEDIN_EMAIL=${LINKEDIN_EMAIL}
-      - LINKEDIN_PASSWORD=${LINKEDIN_PASSWORD}
-      - DB_NAME=${DB_NAME:-linkedin_jobs}
-      - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-postgres}
-      - DB_HOST=postgres  # This will use the service name as hostname
-      - DB_PORT=5432
-      - SECRET_KEY=${SECRET_KEY:-default_dev_key}
-      - FLASK_DEBUG=True
-      - PYTHONUNBUFFERED=1  # Ensure Python output is not buffered
-    volumes:
-      - ./app:/app/app  # For development - allows code changes without rebuilding
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-    networks:
-      - scraper-network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  chrome-test:
-    build: .
-    container_name: chrome-test
-    command: python test_chrome.py
-    environment:
-      - PYTHONUNBUFFERED=1
-    networks:
-      - scraper-network
-
   postgres:
     image: postgres:15
     container_name: linkedin-db
     environment:
-      - POSTGRES_DB=${DB_NAME:-linkedin_jobs}
-      - POSTGRES_USER=${DB_USER:-postgres}
-      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: linkedin_jobs
     ports:
       - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     networks:
       - scraper-network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
 
-volumes:
-  postgres_data:
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: linkedin-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - scraper-network
 
 networks:
   scraper-network:
-    driver: bridge 
+    driver: bridge
