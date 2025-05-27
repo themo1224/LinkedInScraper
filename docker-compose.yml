@@ -42,12 +42,14 @@ services:
       - DB_PORT=5432
       - DB_NAME=linkedin_jobs
       - PYTHONUNBUFFERED=1
+      - LINKEDIN_EMAIL=${LINKEDIN_EMAIL}
+      - LINKEDIN_PASSWORD=${LINKEDIN_PASSWORD}
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - scraper-network
-    command: python init_db.py
+    command: python -m app.main
 
 networks:
   scraper-network:
